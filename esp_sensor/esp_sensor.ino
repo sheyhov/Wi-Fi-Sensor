@@ -37,6 +37,7 @@ HTU21D myHTU21D;
 #endif
 
 
+<<<<<<< HEAD:esp_sensor/esp_sensor.ino
 char mqttServer[16] = "192.168.1.240";
 char uptimeData;
 String freeMemData;
@@ -44,6 +45,17 @@ String ipAddressEsp;
 char macAddrStr;
 
 const char ver[] PROGMEM = "1.06";
+=======
+char staticIpStr[16] = "192.168.1.220";
+char staticGatewayStr[16] = "192.168.1.1";
+char staticSubnetStr[16] = "255.255.255.0";
+uint8_t staticIpMode = 0;
+
+char mqttServerIpStr[16] = "192.168.1.200";
+
+
+const char *ver = "1.06";
+>>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
 
 const char lux[] PROGMEM = "Lux";
 const char lightType[] PROGMEM = "LightType";
@@ -70,7 +82,6 @@ struct ConfDeviceStruct {
   char publish_topic[32];
   char subscribe_topic[32];
   char commandPub_topic[32];
-  char commandSub_topic[32];
   uint8_t light_pin;
   uint8_t motion_pin;
   uint8_t dht_pin;
@@ -92,7 +103,6 @@ struct ConfDeviceStruct {
   "/stateSub/",
   "/statePub/",
   "/commandPub/",
-  "/commandSub/",
   12,
   14,
   13,
@@ -125,6 +135,10 @@ struct StringDataStruct {
   "None",
   "None",
   "None",
+<<<<<<< HEAD:esp_sensor/esp_sensor.ino
+=======
+  "None",
+>>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
   "AUTO",
   "5"
 };
@@ -691,10 +705,9 @@ void MqttPubData()
     client.publish(topic_buff, ver);
   }
   
-  if (ConfDevice.ip_send == false){  
     sprintf_P(topic_buff, (const char *)F("%s%s%s"), ConfDevice.publish_topic,  ip, ConfDevice.mqtt_name);
     client.publish(topic_buff, StringData.ipString.c_str());
-  }
+
   
   if (ConfDevice.mac_send == false){  
     sprintf_P(topic_buff, (const char *)F("%s%s%s"), ConfDevice.publish_topic,  mac, ConfDevice.mqtt_name);
@@ -791,6 +804,70 @@ void TestMQTTPrint()
 }
 
 
+<<<<<<< HEAD:esp_sensor/esp_sensor.ino
+=======
+static char* floatToChar(float charester)
+{
+ dtostrf(charester, 1, 0, value_buff);
+ return value_buff;
+}
+
+
+
+void GetFreeMemory () {
+  StringData.freeMemoryString = String(ESP.getFreeHeap());
+}
+
+
+
+String GetIpString (IPAddress ip) {
+  String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
+  return ipStr;
+}
+
+
+
+void GetMacString () {
+  uint8_t macData[6];
+  WiFi.macAddress(macData);
+  sprintf_P(value_buff, (const char *)F("%x:%x:%x:%x:%x:%x"), macData[0],  macData[1], macData[2], macData[3], macData[4], macData[5]);
+  if (StringData.macString != String(value_buff)){  
+    StringData.macString = String(value_buff);
+    ConfDevice.mac_send = false;
+  }
+}
+
+
+
+IPAddress stringToIp (String strIp) {
+
+  String temp;
+  IPAddress ip;
+
+  int count = 0;
+  for(int i=0; i <= strIp.length(); i++)
+  {
+    if(strIp[i] != '.')
+    {
+      temp += strIp[i];
+    }
+    else
+    {
+      if(count < 4)
+      {
+        ip[count] = atoi(temp.c_str());
+        temp = "";
+        count++;
+      }
+    }
+    if(i==strIp.length())
+    {
+      ip[count] = atoi(temp.c_str());
+    }
+  }
+  return ip;
+}
+>>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
 
 
 
@@ -836,7 +913,15 @@ bool saveConfig() {
 
   json["sta_ssid"] = ConfDevice.sta_ssid;
   json["sta_pwd"] = ConfDevice.sta_pwd;
+<<<<<<< HEAD:esp_sensor/esp_sensor.ino
   json["mqtt_server_ip_srting"] = mqttServer;
+=======
+  json["staticIpMode"] = staticIpMode;
+  json["staticIP"] = staticIpStr;
+  json["staticGateway"] = staticGatewayStr;
+  json["staticSubnet"] = staticSubnetStr;
+  json["mqtt_server_ip_srting"] = mqttServerIpStr;
+>>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
   json["mqtt_name"] = ConfDevice.mqtt_name;
   json["publish_topic"] = ConfDevice.publish_topic;
   json["subscribe_topic"] = ConfDevice.subscribe_topic;
@@ -907,8 +992,25 @@ bool loadConfig() {
   const char* sta_pwd_char = json["sta_pwd"];
   sprintf_P(ConfDevice.sta_pwd, ("%s"), sta_pwd_char);
 
+<<<<<<< HEAD:esp_sensor/esp_sensor.ino
   const char* mqtt_server_char = json["mqtt_server_ip_srting"];
   sprintf_P(mqttServer, ("%s"), mqtt_server_char);
+=======
+  const char* staticIpMode_char = json["staticIpMode"];
+  sprintf_P(staticIpStr, ("%s"), staticIpMode_char);
+
+  const char* staticIP_char = json["staticIP"];
+  sprintf_P(staticIpStr, ("%s"), staticIP_char);
+
+  const char* staticGateway_char = json["staticGateway"];
+  sprintf_P(staticGatewayStr, ("%s"), staticGateway_char);
+
+  const char* staticSubnet_char = json["staticSubnet"];
+  sprintf_P(staticSubnetStr, ("%s"), staticSubnet_char);
+
+  const char* mqtt_server_ip_srting_char = json["mqtt_server_ip_srting"];
+  sprintf_P(mqttServerIpStr, ("%s"), mqtt_server_ip_srting_char);
+>>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
 
   const char* mqtt_name_char = json["mqtt_name"];
   sprintf_P(ConfDevice.mqtt_name, ("%s"), mqtt_name_char);
@@ -918,6 +1020,14 @@ bool loadConfig() {
 
   const char* subscribe_topic_char = json["subscribe_topic"];
   sprintf_P(ConfDevice.subscribe_topic, ("%s"), subscribe_topic_char);
+
+  if (json["staticIpMode"]){
+    const char* staticIpMode_char = json["staticIpMode"];
+    conv = String(staticIpMode_char);
+    staticIpMode = atoi(conv.c_str());
+  } else {
+    saveConfig();
+  }
 
   if (json["light_pin"]){
     const char* light_pin_char = json["light_pin"];
@@ -1266,10 +1376,37 @@ void web_espConf(void) {
     data += inputBodyName + String(F("STA SSID")) + inputBodyPOST + String(F("sta_ssid"))  + inputPlaceHolder + ConfDevice.sta_ssid + inputBodyClose + inputBodyCloseDiv;
 
     payload=server.arg("sta_pwd");
-    if (payload.length() > 0 ) {
+    if (payload.length() > 7 &&  payload != "********") {
       payload.toCharArray(ConfDevice.sta_pwd, sizeof(ConfDevice.sta_pwd));
     }
     data += inputBodyName + String(F("Password")) + String(F("</span><input type='password' name='")) + String(F("sta_pwd")) + inputPlaceHolder + String(F("********")) + inputBodyClose + inputBodyCloseDiv;
+
+    payload=server.arg("staticIP");
+    if (payload.length() > 6 ) {
+      payload.toCharArray(staticIpStr, sizeof(staticIpStr));
+      staticIpMode = 1;
+    } else {
+      staticIpMode = 0;
+    }
+    data += inputBodyName + String("Static IP") + inputBodyPOST + String("staticIP") + inputPlaceHolder + staticIpStr + inputBodyClose + inputBodyCloseDiv;
+
+    payload=server.arg("staticGateway");
+    if (payload.length() > 6 ) {
+      payload.toCharArray(staticGatewayStr, sizeof(staticGatewayStr));
+      staticIpMode += 1;
+    } else {
+      staticIpMode = 0;
+    }
+    data += inputBodyName + String("Static Gateway") + inputBodyPOST + String("staticGateway") + inputPlaceHolder + staticGatewayStr + inputBodyClose + inputBodyCloseDiv;
+
+    payload=server.arg("staticSubnet");
+    if (payload.length() > 6 ) {
+      payload.toCharArray(staticSubnetStr, sizeof(staticSubnetStr));
+      staticIpMode += 1;
+    } else {
+      staticIpMode = 0;
+    }
+    data += inputBodyName + String("Static Subnet") + inputBodyPOST + String("staticSubnet") + inputPlaceHolder + staticSubnetStr + inputBodyClose + inputBodyCloseDiv;
 
     payload=server.arg("light_pin");
     if (payload.length() > 0 ) {
@@ -1356,9 +1493,15 @@ void web_mqttConf(void) {
 
     String payload=server.arg("mqtt_ip");
     if (payload.length() > 0 ) {
+<<<<<<< HEAD:esp_sensor/esp_sensor.ino
       payload.toCharArray(mqttServer, sizeof(mqttServer));
     }
     data += inputBodyName + String(F("Server MQTT")) + inputBodyPOST + String(F("mqtt_ip")) + inputPlaceHolder + mqttServer + inputBodyClose + inputBodyCloseDiv;
+=======
+      payload.toCharArray(mqttServerIpStr, sizeof(mqttServerIpStr));
+    }
+    data += inputBodyName + String("Server MQTT") + inputBodyPOST + String("mqtt_ip") + inputPlaceHolder + mqttServerIpStr + inputBodyClose + inputBodyCloseDiv;
+>>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
 
     payload=server.arg("mqtt_name");
     if (payload.length() > 0 ) {
@@ -1545,7 +1688,11 @@ void setup() {
 
 
   client.setClient(espClient);
+<<<<<<< HEAD:esp_sensor/esp_sensor.ino
   IPAddress mqtt_ip = ws.StrToIp(String(mqttServer));
+=======
+  IPAddress mqtt_ip = stringToIp(mqttServerIpStr);
+>>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
   client.setServer(mqtt_ip, 1883);
   client.setCallback (callback);
 
@@ -1569,7 +1716,14 @@ void setup() {
 
   // start WiFi
   WiFi.mode(WIFI_AP_STA);
+  if (staticIpMode == 3){
+    IPAddress staticIP = stringToIp(staticIpStr);
+    IPAddress staticGateway = stringToIp(staticGatewayStr);
+    IPAddress staticSubnet = stringToIp(staticSubnetStr);
+    WiFi.config(staticIP, staticGateway, staticSubnet);
+  }
   WiFi.begin(ConfDevice.sta_ssid, ConfDevice.sta_pwd);
+
   waitConnected();
   if (WiFi.status() == WL_CONNECTED) {
     WiFi.softAP(ConfDevice.module_id);
@@ -1631,11 +1785,21 @@ void loop() {
       GetSHT21SensorData();
     #endif
 
+<<<<<<< HEAD:esp_sensor/esp_sensor.ino
     
     uptimeData = ws.Uptime();
     freeMemData = ws.FreeMem();
     ipAddressEsp = ws.IpLocalStr();
     macAddrStr = ws.MacStr();
+=======
+    GetUptimeData();
+    GetFreeMemory();
+
+    IPAddress espIP = WiFi.localIP();
+    StringData.ipString = GetIpString(espIP);
+
+    GetMacString();
+>>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
 
     #ifdef DHT_ON
       DHT22Sensor();

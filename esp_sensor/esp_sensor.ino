@@ -1510,31 +1510,31 @@ void web_pinControl(void) {
 String XML;
 
 void buildXML(){
-  XML="<?xml version='1.0'?>";
-  XML+="<Donnees>"; 
-    XML+="<temperature>";
+  XML=F("<?xml version='1.0'?>");
+  XML+=F("<Donnees>"); 
+    XML+=F("<temperature>");
     XML+=StringData.temperatureString;
-    XML+=String(F(" °C"));
-    XML+="</temperature>";
-    XML+="<humidity>";
+    XML+=F(" °C");
+    XML+=F("</temperature>");
+    XML+=F("<humidity>");
     XML+=StringData.humidityString;
-    XML+=String(F(" %"));
-    XML+="</humidity>";
-    XML+="<pressure>";
+    XML+=F(" %");
+    XML+=F("</humidity>");
+    XML+=F("<pressure>");
     XML+=StringData.pressureString;
-    XML+=String(F(" mm"));
-    XML+="</pressure>";
-    XML+="<illuminance>";
+    XML+=F(" mm");
+    XML+=F("</pressure>");
+    XML+=F("<illuminance>");
     XML+=StringData.luxString;
-    XML+=String(F(" lux"));
-    XML+="</illuminance>";
-    XML+="<uptime>";
+    XML+=F(" lux");
+    XML+=F("</illuminance>");
+    XML+=F("<uptime>");
     XML+=uptimeData;
-    XML+="</uptime>";
-    XML+="<freeMemory>";
+    XML+=F("</uptime>");
+    XML+=F("<freeMemory>");
     XML+=freeMemData;
-    XML+="</freeMemory>";
-  XML+="</Donnees>"; 
+    XML+=F("</freeMemory>");
+  XML+=F("</Donnees>"); 
 }
 
 

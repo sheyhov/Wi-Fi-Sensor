@@ -37,15 +37,11 @@ HTU21D myHTU21D;
 #endif
 
 
-<<<<<<< HEAD:esp_sensor/esp_sensor.ino
-char mqttServer[16] = "192.168.1.240";
 char uptimeData;
 String freeMemData;
 String ipAddressEsp;
 char macAddrStr;
 
-const char ver[] PROGMEM = "1.06";
-=======
 char staticIpStr[16] = "192.168.1.220";
 char staticGatewayStr[16] = "192.168.1.1";
 char staticSubnetStr[16] = "255.255.255.0";
@@ -53,9 +49,15 @@ uint8_t staticIpMode = 0;
 
 char mqttServerIpStr[16] = "192.168.1.200";
 
+boolean motionActive = false;
 
-const char *ver = "1.06";
->>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
+char topic_buff[120];
+char value_buff[120];
+
+String network_html;
+
+
+const char ver[] PROGMEM = "1.07";
 
 const char lux[] PROGMEM = "Lux";
 const char lightType[] PROGMEM = "LightType";
@@ -73,6 +75,7 @@ const char errorsDHT[] PROGMEM = "ErrorsDHT";
 const char uptime[] PROGMEM = "Uptime";
 
 const char sec[] PROGMEM = "sec";
+
 
 struct ConfDeviceStruct {
   char sta_ssid[32];
@@ -93,8 +96,6 @@ struct ConfDeviceStruct {
   bool ver_send;
   bool ip_send;
   bool mac_send;
-
-
 } ConfDevice = {
   "HomeNET",
   "Asdf1234",
@@ -121,31 +122,17 @@ struct StringDataStruct {
   String pressureString;
   String humidityString;
   String luxString;
-  String ipString;
-  String uptimeString;
-  String freeMemoryString;
   String lightState;
   String lightOffTimerStting;
-
 } StringData = {
   "None",
   "None",
   "None",
   "None",
-  "None",
-  "None",
-  "None",
-<<<<<<< HEAD:esp_sensor/esp_sensor.ino
-=======
-  "None",
->>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
   "AUTO",
   "5"
 };
 
-BH1750 lightSensor;
-PubSubClient client;
-Espws ws;
 
 unsigned long getDataTimer = 0;
 unsigned long publishTimer = 2000;
@@ -154,14 +141,11 @@ unsigned long rebootTimer = 6000;
 unsigned long subscribeTimer = ConfDevice.subscribe_delay - 5000;
 unsigned long lightOffTimer = 0;
 
-boolean run = false;
 
+BH1750 lightSensor;
+PubSubClient client;
 WiFiClient espClient;
-
-char topic_buff[120];
-char value_buff[120];
-
-String network_html;
+Espws ws;
 
 ESP8266WebServer server(80);
 
@@ -564,7 +548,7 @@ void MotionDetect()
     #endif
     bool motion = true;
     LightControl(motion);
-    run = true;
+    motionActive = true;
     if (client.connect(ConfDevice.mqtt_name)) {
       sprintf_P(topic_buff, (const char *)F("%s%s%s"), ConfDevice.publish_topic,  motionSensor, ConfDevice.mqtt_name);
       client.publish(topic_buff, "ON");
@@ -694,10 +678,10 @@ void MqttPubData()
   client.publish(topic_buff, StringData.humidityString.c_str());
 
   sprintf_P(topic_buff, (const char *)F("%s%s%s"), ConfDevice.publish_topic,  freeMemory, ConfDevice.mqtt_name);
-  client.publish(topic_buff, StringData.freeMemoryString.c_str());
+  client.publish(topic_buff, freeMemData.c_str());
 
   sprintf_P(topic_buff, (const char *)F("%s%s%s"), ConfDevice.publish_topic, uptime, ConfDevice.mqtt_name);
-  client.publish(topic_buff, StringData.uptimeString.c_str());
+  client.publish(topic_buff, &uptimeData);
 
 
   if (ConfDevice.ver_send == false){
@@ -706,7 +690,7 @@ void MqttPubData()
   }
   
     sprintf_P(topic_buff, (const char *)F("%s%s%s"), ConfDevice.publish_topic,  ip, ConfDevice.mqtt_name);
-    client.publish(topic_buff, StringData.ipString.c_str());
+    client.publish(topic_buff, ipAddressEsp.c_str());
 
   
   if (ConfDevice.mac_send == false){  
@@ -804,73 +788,6 @@ void TestMQTTPrint()
 }
 
 
-<<<<<<< HEAD:esp_sensor/esp_sensor.ino
-=======
-static char* floatToChar(float charester)
-{
- dtostrf(charester, 1, 0, value_buff);
- return value_buff;
-}
-
-
-
-void GetFreeMemory () {
-  StringData.freeMemoryString = String(ESP.getFreeHeap());
-}
-
-
-
-String GetIpString (IPAddress ip) {
-  String ipStr = String(ip[0]) + '.' + String(ip[1]) + '.' + String(ip[2]) + '.' + String(ip[3]);
-  return ipStr;
-}
-
-
-
-void GetMacString () {
-  uint8_t macData[6];
-  WiFi.macAddress(macData);
-  sprintf_P(value_buff, (const char *)F("%x:%x:%x:%x:%x:%x"), macData[0],  macData[1], macData[2], macData[3], macData[4], macData[5]);
-  if (StringData.macString != String(value_buff)){  
-    StringData.macString = String(value_buff);
-    ConfDevice.mac_send = false;
-  }
-}
-
-
-
-IPAddress stringToIp (String strIp) {
-
-  String temp;
-  IPAddress ip;
-
-  int count = 0;
-  for(int i=0; i <= strIp.length(); i++)
-  {
-    if(strIp[i] != '.')
-    {
-      temp += strIp[i];
-    }
-    else
-    {
-      if(count < 4)
-      {
-        ip[count] = atoi(temp.c_str());
-        temp = "";
-        count++;
-      }
-    }
-    if(i==strIp.length())
-    {
-      ip[count] = atoi(temp.c_str());
-    }
-  }
-  return ip;
-}
->>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
-
-
-
 void TestSystemPrint()
 {
   Serial.println(F("----------------"));
@@ -881,13 +798,13 @@ void TestSystemPrint()
 
   Serial.print(F("Version "));  Serial.println(ver);
 
-  Serial.print(F("IP address: "));  Serial.println(StringData.ipString);
+  Serial.print(F("IP address: "));  Serial.println(ipAddressEsp);
 
   Serial.print(F("Sketch size: "));  Serial.println(ESP.getSketchSize());
 
   Serial.print(F("Free size: "));  Serial.println(ESP.getFreeSketchSpace());
 
-  Serial.print(F("Free memory: "));  Serial.println(StringData.freeMemoryString);
+  Serial.print(F("Free memory: "));  Serial.println(freeMemData);
 
   Serial.print(F("WiFi status: "));  Serial.println(WiFi.status());
 
@@ -913,15 +830,11 @@ bool saveConfig() {
 
   json["sta_ssid"] = ConfDevice.sta_ssid;
   json["sta_pwd"] = ConfDevice.sta_pwd;
-<<<<<<< HEAD:esp_sensor/esp_sensor.ino
-  json["mqtt_server_ip_srting"] = mqttServer;
-=======
   json["staticIpMode"] = staticIpMode;
   json["staticIP"] = staticIpStr;
   json["staticGateway"] = staticGatewayStr;
   json["staticSubnet"] = staticSubnetStr;
   json["mqtt_server_ip_srting"] = mqttServerIpStr;
->>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
   json["mqtt_name"] = ConfDevice.mqtt_name;
   json["publish_topic"] = ConfDevice.publish_topic;
   json["subscribe_topic"] = ConfDevice.subscribe_topic;
@@ -992,10 +905,6 @@ bool loadConfig() {
   const char* sta_pwd_char = json["sta_pwd"];
   sprintf_P(ConfDevice.sta_pwd, ("%s"), sta_pwd_char);
 
-<<<<<<< HEAD:esp_sensor/esp_sensor.ino
-  const char* mqtt_server_char = json["mqtt_server_ip_srting"];
-  sprintf_P(mqttServer, ("%s"), mqtt_server_char);
-=======
   const char* staticIpMode_char = json["staticIpMode"];
   sprintf_P(staticIpStr, ("%s"), staticIpMode_char);
 
@@ -1010,7 +919,6 @@ bool loadConfig() {
 
   const char* mqtt_server_ip_srting_char = json["mqtt_server_ip_srting"];
   sprintf_P(mqttServerIpStr, ("%s"), mqtt_server_ip_srting_char);
->>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
 
   const char* mqtt_name_char = json["mqtt_name"];
   sprintf_P(ConfDevice.mqtt_name, ("%s"), mqtt_name_char);
@@ -1219,7 +1127,7 @@ void rootWebPage(void) {
     
     String title2       = panelHeaderName + String(F("ESP Settings"))  + panelHeaderEnd;
     String ssid         = panelBodySymbol + String(F("signal"))        + panelBodyName + String(F("Wi-Fi SSID"))  + panelBodyValue + closingAngleBracket + ConfDevice.sta_ssid              + panelBodyEnd;
-    String IPAddClient  = panelBodySymbol + String(F("globe"))         + panelBodyName + String(F("IP Address"))  + panelBodyValue + closingAngleBracket + StringData.ipString              + panelBodyEnd;
+    String IPAddClient  = panelBodySymbol + String(F("globe"))         + panelBodyName + String(F("IP Address"))  + panelBodyValue + closingAngleBracket + ipAddressEsp              + panelBodyEnd;
     String MacAddr      = panelBodySymbol + String(F("scale"))         + panelBodyName + String(F("MAC Address")) + panelBodyValue + closingAngleBracket + macAddrStr                       + panelBodyEnd;
     String MqttPrefix   = panelBodySymbol + String(F("tag"))           + panelBodyName + String(F("MQTT Prefix")) + panelBodyValue + closingAngleBracket + ConfDevice.mqtt_name             + panelBodyEnd;
     String Uptime       = panelBodySymbol + String(F("time"))          + panelBodyName + String(F("Uptime"))      + panelBodyValue + String(F(" id='uptimeId'"))     + closingAngleBracket  + panelBodyEnd;
@@ -1493,15 +1401,9 @@ void web_mqttConf(void) {
 
     String payload=server.arg("mqtt_ip");
     if (payload.length() > 0 ) {
-<<<<<<< HEAD:esp_sensor/esp_sensor.ino
-      payload.toCharArray(mqttServer, sizeof(mqttServer));
-    }
-    data += inputBodyName + String(F("Server MQTT")) + inputBodyPOST + String(F("mqtt_ip")) + inputPlaceHolder + mqttServer + inputBodyClose + inputBodyCloseDiv;
-=======
       payload.toCharArray(mqttServerIpStr, sizeof(mqttServerIpStr));
     }
-    data += inputBodyName + String("Server MQTT") + inputBodyPOST + String("mqtt_ip") + inputPlaceHolder + mqttServerIpStr + inputBodyClose + inputBodyCloseDiv;
->>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
+    data += inputBodyName + String(F("Server MQTT")) + inputBodyPOST + String(F("mqtt_ip")) + inputPlaceHolder + mqttServerIpStr + inputBodyClose + inputBodyCloseDiv;
 
     payload=server.arg("mqtt_name");
     if (payload.length() > 0 ) {
@@ -1627,10 +1529,10 @@ void buildXML(){
     XML+=String(F(" lux"));
     XML+="</illuminance>";
     XML+="<uptime>";
-    XML+=StringData.uptimeString;
+    XML+=uptimeData;
     XML+="</uptime>";
     XML+="<freeMemory>";
-    XML+=StringData.freeMemoryString;
+    XML+=freeMemData;
     XML+="</freeMemory>";
   XML+="</Donnees>"; 
 }
@@ -1688,11 +1590,7 @@ void setup() {
 
 
   client.setClient(espClient);
-<<<<<<< HEAD:esp_sensor/esp_sensor.ino
-  IPAddress mqtt_ip = ws.StrToIp(String(mqttServer));
-=======
-  IPAddress mqtt_ip = stringToIp(mqttServerIpStr);
->>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
+  IPAddress mqtt_ip = ws.StrToIp(String(mqttServerIpStr));
   client.setServer(mqtt_ip, 1883);
   client.setCallback (callback);
 
@@ -1717,9 +1615,9 @@ void setup() {
   // start WiFi
   WiFi.mode(WIFI_AP_STA);
   if (staticIpMode == 3){
-    IPAddress staticIP = stringToIp(staticIpStr);
-    IPAddress staticGateway = stringToIp(staticGatewayStr);
-    IPAddress staticSubnet = stringToIp(staticSubnetStr);
+    IPAddress staticIP = ws.StrToIp(staticIpStr);
+    IPAddress staticGateway = ws.StrToIp(staticGatewayStr);
+    IPAddress staticSubnet = ws.StrToIp(staticSubnetStr);
     WiFi.config(staticIP, staticGateway, staticSubnet);
   }
   WiFi.begin(ConfDevice.sta_ssid, ConfDevice.sta_pwd);
@@ -1785,21 +1683,10 @@ void loop() {
       GetSHT21SensorData();
     #endif
 
-<<<<<<< HEAD:esp_sensor/esp_sensor.ino
-    
     uptimeData = ws.Uptime();
     freeMemData = ws.FreeMem();
     ipAddressEsp = ws.IpLocalStr();
     macAddrStr = ws.MacStr();
-=======
-    GetUptimeData();
-    GetFreeMemory();
-
-    IPAddress espIP = WiFi.localIP();
-    StringData.ipString = GetIpString(espIP);
-
-    GetMacString();
->>>>>>> ebd98c31a40ae8450158e095751914859f93a423:esp_sensor/esp_sensor.ino
 
     #ifdef DHT_ON
       DHT22Sensor();
@@ -1811,13 +1698,13 @@ void loop() {
   }
 
 
-  if (run == false){
+  if (motionActive == false){
     MotionDetect();
   }  
 
   if (millis() - motionTimer >= ConfDevice.motion_read_delay){
     motionTimer = millis();
-    run = false;
+    motionActive = false;
     MotionDetect();
   }
 

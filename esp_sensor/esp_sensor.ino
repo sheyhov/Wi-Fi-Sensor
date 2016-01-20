@@ -43,22 +43,22 @@ String freeMemData;
 String ipAddressEsp;
 char macAddrStr;
 
-const char *ver = "1.06";
+const char ver[] PROGMEM = "1.06";
 
-const char *lux = "Lux";
-const char *lightType = "LightType";
-const char *temperature = "Temp";
-const char *humidity = "Humidity";
-const char *pressure = "Pressure";
-const char *altitude = "Altitude";
-const char *motionSensor = "MotionSensor";
-const char *motionsensortimer = "MotionSensorTimer";
-const char *version = "Version";
-const char *freeMemory = "FreeMemory";
-const char *ip = "IP";
-const char *mac = "MAC";
-const char *errorsDHT = "ErrorsDHT";
-const char *uptime = "Uptime";
+const char lux[] PROGMEM = "Lux";
+const char lightType[] PROGMEM = "LightType";
+const char temperature[] PROGMEM = "Temp";
+const char humidity[] PROGMEM = "Humidity";
+const char pressure[] PROGMEM = "Pressure";
+const char altitude[] PROGMEM = "Altitude";
+const char motionSensor[] PROGMEM = "MotionSensor";
+const char motionsensortimer[] PROGMEM = "MotionSensorTimer";
+const char version[] PROGMEM = "Version";
+const char freeMemory[] PROGMEM = "FreeMemory";
+const char ip[] PROGMEM = "IP";
+const char mac[] PROGMEM = "MAC";
+const char errorsDHT[] PROGMEM = "ErrorsDHT";
+const char uptime[] PROGMEM = "Uptime";
 
 const char sec[] PROGMEM = "sec";
 

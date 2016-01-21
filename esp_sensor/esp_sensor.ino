@@ -1230,7 +1230,7 @@ void setupWebUpdate(void) {
     String containerEnd;          containerEnd += FPSTR(containerEndP);
     String siteEnd;               siteEnd += FPSTR(siteEndP);
 
-    String varDataString = String(F("<div class='col-md-4'><div class='page-header'><h1>Update Frimware</h1></div><div class='alert alert-success'>")) + ((Update.hasError()) ? F("FAIL") : F("Update Frimware: OK")) + String(F("</div></div>"));
+    String varDataString = String(F("<div class='col-md-4'><div class='page-header'><h1>Update Frimware</h1></div><div class='alert alert-success'>")) + ( (Update.hasError()) ? String(F("FAIL")) : String(F("Update Frimware: OK")) ) + String(F("</div></div>"));
 
 
     server.send(200, "text/html", headerStart + headerRefreshStatus + headerEnd + bodyNonAjax + navbarStart + navbarNonActive + navbarEnd + containerStart + varDataString + containerEnd + siteEnd);

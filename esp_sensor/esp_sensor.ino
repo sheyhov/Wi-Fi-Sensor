@@ -598,19 +598,19 @@ void callback(char* topic, byte* payload, unsigned int length) {
       #ifdef DEBUG
         Serial.print(F("value_buff: "));  Serial.print(value_buff);  Serial.println(F(" contains ON"));
       #endif
-      StringData.lightState = F("ON");
+      StringData.lightState = String(F("ON"));
       //digitalWrite(ConfDevice.light_pin, HIGH);
     } else if (strncmp (value_buff,"0",1) == 0){
       #ifdef DEBUG
         Serial.print(F("value_buff: "));  Serial.print(value_buff);  Serial.println(F(" contains OFF"));
       #endif
-      StringData.lightState = F("OFF");
+      StringData.lightState = String(F("OFF"));
       //digitalWrite(ConfDevice.light_pin, LOW);
     } else if (strncmp (value_buff,"2",1) == 0){
       #ifdef DEBUG
         Serial.print(F("value_buff: "));  Serial.print(value_buff);  Serial.println(F(" contains Auto"));
       #endif
-      StringData.lightState = F("AUTO");
+      StringData.lightState = String(F("AUTO"));
     }
     LightControl();
   }
@@ -652,11 +652,11 @@ void MqttPubLightState(){
   sprintf_P(topic_buff, (const char *)F("%s%s%s"), ConfDevice.publish_topic,  lightType, ConfDevice.mqtt_name);
   String lightStateNum;
   if (StringData.lightState == "ON"){
-    lightStateNum = F("1");
+    lightStateNum = String(F("1"));
   } else if (StringData.lightState == "OFF"){
-    lightStateNum = F("0");
+    lightStateNum = String(F("0"));
   } else {
-    lightStateNum = F("2");
+    lightStateNum = String(F("2"));
   }
   client.publish(topic_buff, lightStateNum.c_str());
 }
@@ -1296,7 +1296,7 @@ void web_espConf(void) {
     } else {
       staticIpMode = 0;
     }
-    data += inputBodyName + String("Static IP") + inputBodyPOST + String("staticIP") + inputPlaceHolder + staticIpStr + inputBodyClose + inputBodyCloseDiv;
+    data += inputBodyName + String(F("Static IP")) + inputBodyPOST + String(F("staticIP")) + inputPlaceHolder + staticIpStr + inputBodyClose + inputBodyCloseDiv;
 
     payload=server.arg("staticGateway");
     if (payload.length() > 6 ) {
@@ -1305,7 +1305,7 @@ void web_espConf(void) {
     } else {
       staticIpMode = 0;
     }
-    data += inputBodyName + String("Static Gateway") + inputBodyPOST + String("staticGateway") + inputPlaceHolder + staticGatewayStr + inputBodyClose + inputBodyCloseDiv;
+    data += inputBodyName + String(F("Static Gateway")) + inputBodyPOST + String(F("staticGateway")) + inputPlaceHolder + staticGatewayStr + inputBodyClose + inputBodyCloseDiv;
 
     payload=server.arg("staticSubnet");
     if (payload.length() > 6 ) {
@@ -1314,7 +1314,7 @@ void web_espConf(void) {
     } else {
       staticIpMode = 0;
     }
-    data += inputBodyName + String("Static Subnet") + inputBodyPOST + String("staticSubnet") + inputPlaceHolder + staticSubnetStr + inputBodyClose + inputBodyCloseDiv;
+    data += inputBodyName + String(F("Static Subnet")) + inputBodyPOST + String(F("staticSubnet")) + inputPlaceHolder + staticSubnetStr + inputBodyClose + inputBodyCloseDiv;
 
     payload=server.arg("light_pin");
     if (payload.length() > 0 ) {
@@ -1510,31 +1510,31 @@ void web_pinControl(void) {
 String XML;
 
 void buildXML(){
-  XML=F("<?xml version='1.0'?>");
-  XML+=F("<Donnees>"); 
-    XML+=F("<temperature>");
+  XML=String(F("<?xml version='1.0'?>"));
+  XML+=String(F("<Donnees>")); 
+    XML+=String(F("<temperature>"));
     XML+=StringData.temperatureString;
-    XML+=F(" °C");
-    XML+=F("</temperature>");
-    XML+=F("<humidity>");
+    XML+=String(F(" °C"));
+    XML+=String(F("</temperature>"));
+    XML+=String(F("<humidity>"));
     XML+=StringData.humidityString;
-    XML+=F(" %");
-    XML+=F("</humidity>");
-    XML+=F("<pressure>");
+    XML+=String(F(" %"));
+    XML+=String(F("</humidity>"));
+    XML+=String(F("<pressure>"));
     XML+=StringData.pressureString;
-    XML+=F(" mm");
-    XML+=F("</pressure>");
-    XML+=F("<illuminance>");
+    XML+=String(F(" mm"));
+    XML+=String(F("</pressure>"));
+    XML+=String(F("<illuminance>"));
     XML+=StringData.luxString;
-    XML+=F(" lux");
-    XML+=F("</illuminance>");
-    XML+=F("<uptime>");
+    XML+=String(F(" lux"));
+    XML+=String(F("</illuminance>"));
+    XML+=String(F("<uptime>"));
     XML+=uptimeData;
-    XML+=F("</uptime>");
-    XML+=F("<freeMemory>");
+    XML+=String(F("</uptime>"));
+    XML+=String(F("<freeMemory>"));
     XML+=freeMemData;
-    XML+=F("</freeMemory>");
-  XML+=F("</Donnees>"); 
+    XML+=String(F("</freeMemory>"));
+  XML+=String(F("</Donnees>")); 
 }
 
 
